@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои долги | Август 2025</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #7209b7;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --bank-blue: #2a6fdb;
+            --bank-dark: #1d4e8c;
+            --card-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            --header-gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --bank-gradient: linear-gradient(135deg, var(--bank-blue) 0%, var(--bank-dark) 100%);
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px 15px 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Шапка */
+        header {
+            background: var(--header-gradient);
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: var(--card-shadow);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        h1 {
+            font-size: 2.4rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.15rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .current-date {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 1.15rem;
+            backdrop-filter: blur(10px);
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        /* Основной контент */
+        .debt-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        
+        .debt-card {
+            background: white;
+            border-radius: 18px;
+            padding: 0;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .debt-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .bank-card .debt-header {
+            background: var(--bank-gradient);
+        }
+        
+        .debt-header {
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .debt-name {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .debt-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+        
+        .debt-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .debt-content {
+            padding: 20px;
+        }
+        
+        .debt-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+        }
+        
+        .debt-item:not(:last-child) {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .item-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            color: var(--gray);
+        }
+        
+        .item-value {
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .debt-rate {
+            font-size: 1rem;
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+        
+        .bank-rate {
+            background: rgba(42, 111, 219, 0.1);
+            color: var(--bank-blue);
+        }
+        
+        /* Общая сумма */
+        .total-section {
+            background: linear-gradient(135deg, #2b2d42 0%, #1a1b2f 100%);
+            border-radius: 18px;
+            padding: 25px;
+            color: white;
+            box-shadow: var(--card-shadow);
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .total-section::before {
+            content: "";
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+        }
+        
+        .total-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .total-header h2 {
+            font-size: 1.7rem;
+        }
+        
+        .total-amount {
+            font-size: 2.8rem;
+            font-weight: 800;
+            text-align: center;
+            margin: 25px 0;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .info-note {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 14px;
+            font-size: 1rem;
+            position: relative;
+        }
+        
+        /* Подвал */
+        footer {
+            margin-top: 35px;
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.95rem;
+            padding: 20px;
+            width: 100%;
+        }
+        
+        /* Секции */
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 30px 0 20px;
+            font-size: 1.8rem;
+            color: var(--dark);
+        }
+        
+        .section-title i {
+            background: var(--primary);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.4rem;
+        }
+        
+        .bank-section .section-title i {
+            background: var(--bank-blue);
+        }
+        
+        /* Анимации */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .debt-card, .total-section {
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+        
+        /* Отзывчивость */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.1rem;
+            }
+            
+            .debt-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .debt-amount {
+                font-size: 1.6rem;
+                align-self: flex-end;
+            }
+            
+            .total-amount {
+                font-size: 2.3rem;
+            }
+            
+            .section-title {
+                font-size: 1.6rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .debt-name {
+                font-size: 1.3rem;
+            }
+            
+            .debt-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 1.5rem;
+            }
+            
+            .total-amount {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.4rem;
+            }
+            
+            .section-title i {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
+        
+        /* Анимации загрузки */
+        .debt-card:nth-child(1) { animation-delay: 0.1s; }
+        .debt-card:nth-child(2) { animation-delay: 0.2s; }
+        .debt-card:nth-child(3) { animation-delay: 0.3s; }
+        .debt-card:nth-child(4) { animation-delay: 0.4s; }
+        .total-section { animation-delay: 0.5s; }
+        
+        /* Прогресс-бар */
+        .progress-container {
+            height: 8px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 1.5s ease;
+        }
+        
+        .bank-card .progress-bar {
+            background: var(--bank-blue);
+        }
+        
+        /* Иконки для сервисов */
+        .srochnodengi-bg { background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%); }
+        .zaimer-bg { background: linear-gradient(135deg, #7209b7 0%, #560bad 100%); }
+        .ykky-bg { background: linear-gradient(135deg, #f72585 0%, #b5179e 100%); }
+        .webzaim-bg { background: linear-gradient(135deg, #4cc9f0 0%, #4895ef 100%); }
+        .ekapusta-bg { background: linear-gradient(135deg, #38b000 0%, #2d8a00 100%); }
+        .tbank-bg { background: linear-gradient(135deg, #2a6fdb 0%, #1d4e8c 100%); }
+        .yabank-bg { background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-file-invoice-dollar"></i> Мои долги</h1>
+            <p class="subtitle">Актуальная информация на август 2025 года</p>
+            <div class="current-date">
+                <i class="fas fa-calendar-alt"></i> Загрузка даты...
+            </div>
+        </header>
+        
+        <div class="total-section">
+            <div class="total-header">
+                <h2><i class="fas fa-receipt"></i> Общая задолженность</h2>
+                <i class="fas fa-coins" style="font-size: 2.3rem; opacity: 0.8;"></i>
+            </div>
+            <div class="total-amount" id="totalAmount">Загрузка...</div>
+            <div class="info-note">
+                <i class="fas fa-info-circle"></i> Включает микрозаймы и банковские кредиты
+            </div>
+        </div>
+        
+        <div class="loans-section">
+            <div class="section-title">
+                <i class="fas fa-money-bill-wave"></i>
+                <h2>Микрозаймы</h2>
+            </div>
+            <div class="debt-list" id="loansContainer">
+                <!-- Микрозаймы будут вставлены здесь -->
+            </div>
+        </div>
+        
+        <div class="bank-section">
+            <div class="section-title">
+                <i class="fas fa-university"></i>
+                <h2>Банковские кредиты</h2>
+            </div>
+            <div class="debt-list" id="banksContainer">
+                <!-- Банковские кредиты будут вставлены здесь -->
+            </div>
+        </div>
+        
+        <footer>
+            <p><i class="fas fa-sync-alt"></i> Данные обновляются автоматически</p>
+            <p>© 2025 Личный кабинет заёмщика</p>
+        </footer>
+    </div>
+
+    <script>
+        // Исходные данные на 4 августа 2025
+        const baseLoans = [
+            {
+                name: "Срочноденьги",
+                amount: 55219.22,
+                rate: 0.8,
+                icon: "fa-wallet",
+                color: "srochnodengi-bg",
+                type: "loan"
+            },
+            {
+                name: "Ykky",
+                amount: 8707.12,
+                rate: 0.8,
+                icon: "fa-mobile-alt",
+                color: "ykky-bg",
+                type: "loan"
+            },
+            {
+                name: "WebZaim",
+                amount: 6519.18,
+                rate: 0.8,
+                icon: "fa-globe",
+                color: "webzaim-bg",
+                type: "loan"
+            },
+            {
+                name: "Займер",
+                amount: 3676.30,
+                rate: 0.8,
+                icon: "fa-credit-card",
+                color: "zaimer-bg",
+                type: "loan"
+            },
+            {
+                name: "ЕКапуста",
+                amount: 1224.00,
+                rate: 0.8,
+                icon: "fa-leaf",
+                color: "ekapusta-bg",
+                type: "loan"
+            }
+        ];
+
+        const baseBanks = [
+            {
+                name: "Т-Банк",
+                amount: 17000.00,
+                rate: 0.0,
+                icon: "fa-building",
+                color: "tbank-bg",
+                type: "bank"
+            },
+            {
+                name: "Яндекс Банк",
+                amount: 10126.79,
+                rate: 0.0,
+                icon: "fa-yandex",
+                color: "yabank-bg",
+                type: "bank"
+            }
+        ];
+
+        // Функция расчета обновленных сумм для займов
+        function calculateUpdatedLoans() {
+            const baseDate = new Date(2025, 7, 4); // 4 августа 2025 (месяцы 0-11)
+            const today = new Date();
+            
+            // Рассчитываем разницу в днях
+            const timeDiff = today - baseDate;
+            const daysDiff = Math.max(0, Math.floor(timeDiff / (1000 * 60 * 60 * 24)));
+            
+            // Создаем копию исходных данных
+            const updatedLoans = JSON.parse(JSON.stringify(baseLoans));
+            
+            // Применяем проценты за каждый прошедший день
+            updatedLoans.forEach(loan => {
+                const dailyMultiplier = 1 + (loan.rate / 100);
+                loan.amount = loan.amount * Math.pow(dailyMultiplier, daysDiff);
+            });
+            
+            return updatedLoans;
+        }
+
+        // Форматирование чисел (добавление пробелов и знака рубля)
+        function formatNumber(num) {
+            return num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ').replace('.', ',') + ' ₽';
+        }
+
+        // Расчет общей суммы
+        function calculateTotal(loans, banks) {
+            const loansTotal = loans.reduce((total, loan) => total + loan.amount, 0);
+            const banksTotal = banks.reduce((total, bank) => total + bank.amount, 0);
+            return loansTotal + banksTotal;
+        }
+
+        // Создание карточек долгов
+        function createDebtCards() {
+            const loans = calculateUpdatedLoans();
+            const banks = JSON.parse(JSON.stringify(baseBanks)); // Копируем банки без изменений
+            
+            loans.sort((a, b) => b.amount - a.amount);
+            banks.sort((a, b) => b.amount - a.amount);
+            
+            const loansContainer = document.getElementById('loansContainer');
+            const banksContainer = document.getElementById('banksContainer');
+            
+            loansContainer.innerHTML = '';
+            banksContainer.innerHTML = '';
+            
+            const total = calculateTotal(loans, banks);
+            
+            // Рендерим микрозаймы
+            loans.forEach(loan => {
+                const card = createCard(loan, total);
+                loansContainer.appendChild(card);
+            });
+            
+            // Рендерим банки
+            banks.forEach(bank => {
+                const card = createCard(bank, total, true);
+                banksContainer.appendChild(card);
+            });
+            
+            // Устанавливаем общую сумму
+            document.getElementById('totalAmount').textContent = formatNumber(total);
+            
+            // Обновляем даты на странице
+            updateDates();
+            
+            // Анимируем прогресс-бары
+            setTimeout(() => {
+                document.querySelectorAll('.progress-bar').forEach(bar => {
+                    bar.style.width = bar.style.width;
+                });
+            }, 300);
+        }
+        
+        // Создание карточки долга
+        function createCard(debt, total, isBank = false) {
+            const percentage = (debt.amount / total) * 100;
+            const bankClass = isBank ? 'bank-card' : '';
+            
+            const card = document.createElement('div');
+            card.className = `debt-card ${bankClass}`;
+            
+            card.innerHTML = `
+                <div class="debt-header">
+                    <div class="debt-name">
+                        <div class="debt-icon ${debt.color}">
+                            <i class="fas ${debt.icon}"></i>
+                        </div>
+                        <span>${debt.name}</span>
+                    </div>
+                    <div class="debt-amount">${formatNumber(debt.amount)}</div>
+                </div>
+                <div class="debt-content">
+                    <div class="debt-item">
+                        <div class="item-label">
+                            <i class="fas fa-percentage"></i>
+                            <span>Процентная ставка</span>
+                        </div>
+                        <div class="item-value debt-rate ${isBank ? 'bank-rate' : ''}">
+                            ${debt.rate > 0 ? debt.rate + '% в сутки' : 'Фиксированная ставка'}
+                        </div>
+                    </div>
+                    <div class="debt-item">
+                        <div class="item-label">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Доля в общем долге</span>
+                        </div>
+                        <div class="item-value">${percentage.toFixed(1)}%</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: ${percentage}%"></div>
+                    </div>
+                    ${debt.rate > 0 ? `
+                    <div class="debt-item">
+                        <div class="item-label">
+                            <i class="fas fa-calculator"></i>
+                            <span>Проценты за день</span>
+                        </div>
+                        <div class="item-value">${formatNumber(debt.amount * (debt.rate/100))}</div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Обновление дат на странице
+        function updateDates() {
+            const now = new Date();
+            const options = { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            };
+            
+            // Форматируем дату для заголовка
+            const formattedDate = now.toLocaleDateString('ru-RU', options) + ' года';
+            document.querySelector('.current-date').innerHTML = 
+                `<i class="fas fa-calendar-alt"></i> ${formattedDate}`;
+            
+            // Форматируем время для обновления
+            const timeString = now.toLocaleTimeString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            document.querySelector('footer p:first-child').innerHTML = 
+                `<i class="fas fa-sync-alt"></i> Данные обновлены ${now.toLocaleDateString('ru-RU')} в ${timeString}`;
+            
+            // Добавляем информацию о ставках
+            const infoNote = document.querySelector('.info-note');
+            infoNote.innerHTML = `
+                <i class="fas fa-info-circle"></i> 
+                Ставка по микрозаймам: 0.8% в сутки | 
+                Банковские кредиты: фиксированная сумма
+            `;
+        }
+        
+        // Инициализация страницы
+        document.addEventListener('DOMContentLoaded', createDebtCards);
+    </script>
+</body>
+</html>
